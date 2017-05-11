@@ -42,6 +42,7 @@ var Engine = (function(global) {
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
+
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
@@ -135,7 +136,12 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
+        // This section puts all the scores at the bottom of the screen.
+        ctx.font = '30px serif';
+        ctx.fillText("Score:",5,575);
+        ctx.fillText(player.wins,105,575);
+        ctx.fillText("Deaths:",310,575);
+        ctx.fillText(player.deaths,410,575);
         renderEntities();
     }
 

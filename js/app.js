@@ -47,14 +47,16 @@ Player.prototype.update = function (dt) {
 Player.prototype.collision = function (x,y) {
   // All the objects are the same width, but I only want to check for a 75 height
   // to avoid collisions with invisible hitboxes.
-  var width = 101,
+  var width = 75,
       height = 75;
 
       allEnemies.forEach(function(enemy) {
+        // if collision detected:
         if (x < enemy.x + width &&
             x + width > enemy.x &&
             y < enemy.y + height &&
             height + y > enemy.y) {
+              // reset coordinates, and increment death counter
               this.x = 205;
               this.y = 415;
               this.deaths++;
@@ -68,13 +70,6 @@ Player.prototype.render = function () {
 
   //Draws the next frame
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-
-  // This section puts all the scores at the bottom of the screen.
-  ctx.font = '30px serif';
-  ctx.fillText("Wins:",5,575);
-  ctx.fillText(this.wins,105,575);
-  ctx.fillText("Deaths:",310,575);
-  ctx.fillText(this.deaths,410,575);
 };
 
 Player.prototype.handleInput = function (key) {
@@ -113,17 +108,17 @@ Player.prototype.handleInput = function (key) {
 // Place the player object in a variable called player
 
 // Wrote this function to generate all of the enemies.
-var generator = function () {
+var generator = function (difficulty) {
   var random = function (min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  // difficulty = # of enemies. I wanted a more random generation so I made a seed
+  // difficulty = # of enemies. This number is fed from the selector on the screen.
+  // I wanted a more random generation so I made a seed
   // pool using startingX and startingY.
-  var difficulty = 5,
-      startingX = [-303,-202,-101],
+  var startingX = [-303,-202,-101],
       startingY = [60,145,230],
       enemies = [];
 
@@ -131,19 +126,19 @@ var generator = function () {
   // the three rows, and are given a random speed from 1-10.
   for (var x = 1; x <= difficulty; x++) {
     if (x % 3 === 0) {
-      enemies.push(new Enemy(startingX[random(0,2)],startingY[0],random(1,10)));
+      enemies.push(new Enemy(startingX[random(0,2)],startingY[0],random(1,8)));
     }
     else if (x % 3 == 1) {
-      enemies.push(new Enemy(startingX[random(0,2)],startingY[1],random(1,10)));
+      enemies.push(new Enemy(startingX[random(0,2)],startingY[1],random(1,8)));
     }
     else {
-      enemies.push(new Enemy(startingX[random(0,2)],startingY[2],random(1,10)));
+      enemies.push(new Enemy(startingX[random(0,2)],startingY[2],random(1,8)));
     }
   }
   return enemies;
 };
-
-var allEnemies = generator();
+var difficulty = 3;
+var allEnemies = generator(difficulty);
 
 var player = new Player(205,415);
 
@@ -160,11 +155,7 @@ document.addEventListener('keyup', function(e) {
   player.handleInput(allowedKeys[e.keyCode]);
 });
 
-// User inputs difficulty level in the HTML and is picked up here.
-/*
-document.addEventListener('input', function (evt) {
-  var id = evt.target.id;
-  var text = evt.target.value;
-  var difficulty = text;
-  generator();
-}); */
+document.addEventListener('input', function(evt) {
+  window.difficulty = evt.target.value;
+  window.allEnemies = generator(difficulty);
+});
