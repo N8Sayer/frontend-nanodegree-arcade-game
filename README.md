@@ -7,4 +7,11 @@ For detailed instructions on how to get started, check out this [guide](https://
 
 # Running the Game:
 
+* Start whenever you like!
+* If you want to increase the difficulty, there's a counter at the bottom.
+* The default setting is 3 bugs on screen.
+
 # Playing the Game:
+
+* Use the arrow keys to move.
+* Your goal is to get to the water on the other side without hitting a bug.
