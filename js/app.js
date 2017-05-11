@@ -36,6 +36,8 @@ var Player = function (x,y) {
   this.sprite = 'images/char-horn-girl.png';
   this.x = x;
   this.y = y;
+  this.deaths = 0;
+  this.wins = 0;
 };
 
 Player.prototype.update = function (dt) {
@@ -43,8 +45,10 @@ Player.prototype.update = function (dt) {
 };
 
 Player.prototype.collision = function (x,y) {
+  // All the objects are the same width, but I only want to check for a 75 height
+  // to avoid collisions with invisible hitboxes.
   var width = 101,
-      height = 171;
+      height = 75;
 
       allEnemies.forEach(function(enemy) {
         if (x < enemy.x + width &&
@@ -53,12 +57,24 @@ Player.prototype.collision = function (x,y) {
             height + y > enemy.y) {
               this.x = 205;
               this.y = 415;
+              this.deaths++;
             }
-      });
+      }, this);
 };
 
 Player.prototype.render = function () {
+  //Checks for collisions before drawing the next frame
+  this.collision(this.x,this.y);
+
+  //Draws the next frame
   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+
+  // This section puts all the scores at the bottom of the screen.
+  ctx.font = '30px serif';
+  ctx.fillText("Wins:",5,575);
+  ctx.fillText(this.wins,105,575);
+  ctx.fillText("Deaths:",310,575);
+  ctx.fillText(this.deaths,410,575);
 };
 
 Player.prototype.handleInput = function (key) {
@@ -73,6 +89,7 @@ Player.prototype.handleInput = function (key) {
     case 'up':
       if (this.y == 63) {
         this.y = 415;
+        this.wins++;
       }
       else {
         this.y -= 88;
@@ -94,6 +111,8 @@ Player.prototype.handleInput = function (key) {
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+
+// Wrote this function to generate all of the enemies.
 var generator = function () {
   var random = function (min, max) {
     min = Math.ceil(min);
@@ -101,11 +120,15 @@ var generator = function () {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
-  var difficulty = 8,
+  // difficulty = # of enemies. I wanted a more random generation so I made a seed
+  // pool using startingX and startingY.
+  var difficulty = 5,
       startingX = [-303,-202,-101],
       startingY = [60,145,230],
       enemies = [];
 
+  // enemies are generated with a random X position, but are evenly divided between
+  // the three rows, and are given a random speed from 1-10.
   for (var x = 1; x <= difficulty; x++) {
     if (x % 3 === 0) {
       enemies.push(new Enemy(startingX[random(0,2)],startingY[0],random(1,10)));
@@ -123,6 +146,7 @@ var generator = function () {
 var allEnemies = generator();
 
 var player = new Player(205,415);
+
 // This listens for key presses and sends the keys to your
 // player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -135,3 +159,12 @@ document.addEventListener('keyup', function(e) {
 
   player.handleInput(allowedKeys[e.keyCode]);
 });
+
+// User inputs difficulty level in the HTML and is picked up here.
+/*
+document.addEventListener('input', function (evt) {
+  var id = evt.target.id;
+  var text = evt.target.value;
+  var difficulty = text;
+  generator();
+}); */
