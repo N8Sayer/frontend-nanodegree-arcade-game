@@ -7,11 +7,12 @@ For detailed instructions on how to get started, check out this [guide](https://
 
 # Running the Game:
 
-* Start whenever you like!
-* If you want to increase the difficulty, there's a counter at the bottom.
-* The default setting is 3 bugs on screen.
+* Open index.html in your preferred web browser
+* Set the difficulty using the counter on the loading screen
+* Press Space to Start
 
 # Playing the Game:
 
-* Use the arrow keys to move.
-* Your goal is to get to the water on the other side without hitting a bug.
+* Using the arrow keys to move, get to the water on the other side without hitting a bug.
+* You have 3 lives. Run out, and you'll have to restart the game.
+* You win after crossing to the water successfully 10 times.
