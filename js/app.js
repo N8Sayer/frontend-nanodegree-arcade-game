@@ -36,12 +36,23 @@ var Player = function (x,y) {
   this.sprite = 'images/char-horn-girl.png';
   this.x = x;
   this.y = y;
-  this.deaths = 0;
+  this.lives = 3;
   this.wins = 0;
 };
 
 Player.prototype.update = function (dt) {
 
+};
+
+Player.prototype.gameOver = function (lives,wins) {
+  if (lives < 1) {
+    ctx.textAlign = 'center';
+    ctx.fillText('You lost. Press F5 to try again',252,435);
+  }
+  if (wins > 9) {
+    ctx.textAlign = 'center';
+    ctx.fillText("You won!",252,435);
+  }
 };
 
 Player.prototype.collision = function (x,y) {
@@ -59,7 +70,7 @@ Player.prototype.collision = function (x,y) {
               // reset coordinates, and increment death counter
               this.x = 205;
               this.y = 415;
-              this.deaths++;
+              this.lives--;
             }
       }, this);
 };
@@ -75,31 +86,33 @@ Player.prototype.render = function () {
 Player.prototype.handleInput = function (key) {
   // The logical bounds for the player icon are x(3-407),y(63-415),
   // so I placed everything within the switch case to reduce code.
-  switch (key) {
-    case 'left':
-      if (this.x - 101 >= 3) {
-        this.x -= 101;
-      }
-      break;
-    case 'up':
-      if (this.y == 63) {
-        this.y = 415;
-        this.wins++;
-      }
-      else {
-        this.y -= 88;
-      }
-      break;
-    case 'right':
-      if (this.x + 101 <= 407) {
-        this.x += 101;
-      }
-      break;
-    case 'down':
-      if (this.y + 88 <= 415) {
-        this.y += 88;
-      }
-      break;
+  if (this.lives > 0) {
+    switch (key) {
+      case 'left':
+        if (this.x - 101 >= 3) {
+          this.x -= 101;
+        }
+        break;
+      case 'up':
+        if (this.y == 63) {
+          this.y = 415;
+          this.wins++;
+        }
+        else {
+          this.y -= 88;
+        }
+        break;
+      case 'right':
+        if (this.x + 101 <= 407) {
+          this.x += 101;
+        }
+        break;
+      case 'down':
+        if (this.y + 88 <= 415) {
+          this.y += 88;
+        }
+        break;
+    }
   }
 };
 
@@ -144,12 +157,13 @@ var player = new Player(205,415);
 
 // This listens for key presses and sends the keys to your
 // player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keydown', function(e) {
   var allowedKeys = {
       37: 'left',
       38: 'up',
       39: 'right',
-      40: 'down'
+      40: 'down',
+      32: 'space'
   };
 
   player.handleInput(allowedKeys[e.keyCode]);

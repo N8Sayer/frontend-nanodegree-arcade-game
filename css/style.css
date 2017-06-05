@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css?family=Merriweather');
+
 body {
     text-align: center;
+}
+
+#difficulty {
+  position: absolute;
+  top: 95px;
+  left: 780px;
+  width: 35px;
+  font-size: 20px;
 }

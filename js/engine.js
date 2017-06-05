@@ -25,9 +25,28 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    WebFontConfig = {
+    custom: { families: ['Merriweather'],
+              urls: ['https://fonts.gstatic.com/s/merriweather/v15/RFda8w1V0eDZheqfcyQ4EOgdm0LZdjqr5-oayXSOefg.woff2']},
+    active: function() {
+      /* code to execute once all font families are loaded */
+      console.log("Fonts Loaded!");
+    }
+    };
+    (function() {
+      var wf = document.createElement('script');
+      wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+          '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'true';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+    })();
+
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
+    ctx.font = "23px Merriweather";
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -48,6 +67,7 @@ var Engine = (function(global) {
          */
         update(dt);
         render();
+        player.gameOver(player.lives,player.wins);
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -65,9 +85,8 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        reset();
+        loading();
         lastTime = Date.now();
-        main();
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -120,6 +139,8 @@ var Engine = (function(global) {
             numCols = 5,
             row, col;
 
+        ctx.clearRect(0,0,505,606);
+        document.getElementById('difficulty').style.display = 'none';
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
@@ -137,11 +158,11 @@ var Engine = (function(global) {
             }
         }
         // This section puts all the scores at the bottom of the screen.
-        ctx.font = '30px serif';
+        ctx.textAlign = 'left';
         ctx.fillText("Score:",5,575);
         ctx.fillText(player.wins,105,575);
-        ctx.fillText("Deaths:",310,575);
-        ctx.fillText(player.deaths,410,575);
+        ctx.fillText("Lives:",308,575);
+        ctx.fillText(player.lives,408,575);
         renderEntities();
     }
 
@@ -160,12 +181,28 @@ var Engine = (function(global) {
         player.render();
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-    function reset() {
-        // noop
+    function loading() {
+      var grd = ctx.createRadialGradient(252, 303, 600, 252, 303, 0);
+      grd.addColorStop(0,"white");
+      grd.addColorStop(1,"#00ccff");
+
+      // Fill with gradient
+      ctx.fillStyle = grd;
+      ctx.fillRect(0,0,505,200);
+      ctx.fillStyle = 'black';
+      ctx.textAlign = "center";
+      ctx.fillText('Select your difficulty level:',252,60);
+      ctx.fillText("Press 'Space' to begin the game",252,160);
+
+      var spaceCounter = 0;
+      document.addEventListener('keydown', function(evt) {
+        if (spaceCounter < 1) {
+          if (evt.keyCode === 32) {
+            main();
+          }
+          spaceCounter++;
+        }
+      });
     }
 
     /* Go ahead and load all of the images we know we're going to need to
